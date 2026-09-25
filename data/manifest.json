@@ -1,0 +1,55 @@
+{
+  "cluster_map_included": false,
+  "files": {
+    "cluster_projection_manifest.json": {
+      "records": null,
+      "role": "opaque random cluster keys and frozen anonymous analysis order; no crosswalk",
+      "sha256": "ff1a6bacba3ed652b105660c50c1288ef2c1cda9fb3fc087ed4c0150882c6c3f"
+    },
+    "confirmation_qualification_lock.jsonl": {
+      "records": 180,
+      "role": "frozen qualification endpoint commitments keyed only by opaque clusters",
+      "sha256": "8d984cee8d34ba47dccbfcf29d317502591e277fc717257b0525e18e83d6bcb9"
+    },
+    "confirmation_scored_outcomes.csv": {
+      "records": 2160,
+      "role": "Gemma confirmation projections; opaque clusters and canonical anonymous analysis order",
+      "sha256": "17e537cfc02849571cec16c7628dbacbbdb7389ee8ff6c57e8e51cb947532185"
+    },
+    "input_panel_manifest.json": {
+      "records": null,
+      "role": "frozen source hash commitments only; no task IDs, question text, or answer labels",
+      "sha256": "ae429b790c465858244b0af5a442b742e5f0fbd8198dfed5c048e19753f2e50d"
+    },
+    "k_transition_outcomes.csv": {
+      "records": 3840,
+      "role": "K4 to K4R paired correctness projection; random opaque cluster keys",
+      "sha256": "0e27caa72448e20f9d76b2f53c573b5561622424500a1374c9f0aed74c6c1602"
+    },
+    "r2_scored_outcomes.csv": {
+      "records": 16200,
+      "role": "R2 scored outcomes; opaque clusters, canonical anonymous analysis order, and integrity repetitions",
+      "sha256": "ae9bbaaf0d094278cd999f25099edbb7112e43fbfda1f822d6e6164aa8e829db"
+    },
+    "s1_scored_outcomes.csv": {
+      "records": 2160,
+      "role": "S1 scored outcomes; canonical T1-minus-T0 sign and anonymous analysis order",
+      "sha256": "03b93e95ef979e4ffe5194cf3adcd18a5b771dd8d622fcebb6e5cc48a14b3567"
+    },
+    "source_license_evidence.json": {
+      "records": null,
+      "role": "local evidence about third-party dataset license terms and release handling",
+      "sha256": "919ca06ea7f53ab2ea840f331f13267b22a37c210362664c417d55955bbdfcb3"
+    },
+    "study_status.json": {
+      "records": null,
+      "role": "qualification and incomplete-study status summary",
+      "sha256": "716d3f0a6785ae8efcc626a06a82e43d45280cd2cdb97d20432a08b3a2391853"
+    }
+  },
+  "includes_benchmark_task_ids_in_projections": false,
+  "includes_question_text": false,
+  "includes_raw_model_responses": false,
+  "projection_key": "opaque random cluster_id values with canonical anonymous analysis_order ordinals; no task IDs or crosswalk",
+  "schema_version": "blackwellbench-scored-projection-manifest-v3"
+}

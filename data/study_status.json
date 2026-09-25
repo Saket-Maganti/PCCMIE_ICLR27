@@ -1,0 +1,55 @@
+{
+  "extensions": {
+    "E1": "qualification failed; zero production rows",
+    "E2": "qualification failed; zero production rows",
+    "E3": "not run; no production rows",
+    "E4": "qualification failed; zero production rows",
+    "E5": "qualification failed; zero production rows"
+  },
+  "gemma_confirmation": {
+    "all_three_treatment_gains_positive": true,
+    "cross_host_confirmation": false,
+    "integrity_duplicates": 360,
+    "primary_rows": 1800,
+    "role": "prospective magnitude confirmation",
+    "unique_tasks": 300,
+    "overlap_with_admitted_experiment_registry": 0,
+    "overlap_with_qualification_panel": 0,
+    "model_pretraining_overlap_claimed": false
+  },
+  "r2": {
+    "cells_with_3_of_3_exact_execution_replicates": 5400,
+    "global_inference_family": 18,
+    "inference_specification": "simultaneous max-t implementation and category precedence finalized post-production; discovery only",
+    "role": "discovery",
+    "rows": 16200,
+    "tasks_per_model": 300
+  },
+  "s1": {
+    "integrity_duplicates": 360,
+    "limitation": "Both panel and endpoint differ from prospective confirmation.",
+    "model": "google/gemma-4-12B-it",
+    "model_revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "primary_rows": 1800,
+    "role": "constrained-choice endpoint stress",
+    "tasks": 300
+  },
+  "s1b_arm_b_v2": {
+    "bridge_analysis": "NOT_RUN",
+    "failed_gate": "sequential invariance strict-parser gate",
+    "invariance_responses": 32,
+    "production_rows": 0,
+    "qualification": "NOT_RUN",
+    "role": "incomplete crossed diagnostic",
+    "scientific_conclusion": "No crossed causal estimate.",
+    "status": "BLOCKED"
+  },
+  "stage_b": {
+    "comparisons": 27,
+    "exceedances": 8,
+    "maximum_exceedance_pp": 25.0,
+    "point_tolerance_pp": 7.5,
+    "role": "portability qualification",
+    "status": "FAIL"
+  }
+}

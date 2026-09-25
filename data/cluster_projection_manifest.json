@@ -1,0 +1,47 @@
+{
+  "benchmark_task_ids_in_projection_files": false,
+  "cluster_counts": {
+    "confirmation_scored_outcomes.csv": {
+      "cluster_ids_are_random": true,
+      "opaque_clusters": 300,
+      "rows": 2160,
+      "source_mapping_retained": false,
+      "canonical_analysis_order_present": true
+    },
+    "k_transition_outcomes.csv": {
+      "cluster_ids_are_random": true,
+      "opaque_clusters": 240,
+      "rows": 3840,
+      "source_mapping_retained": false,
+      "canonical_analysis_order_present": false
+    },
+    "r2_scored_outcomes.csv": {
+      "cluster_ids_are_random": true,
+      "opaque_clusters": 300,
+      "rows": 16200,
+      "source_mapping_retained": false,
+      "canonical_analysis_order_present": true
+    },
+    "s1_scored_outcomes.csv": {
+      "cluster_ids_are_random": true,
+      "opaque_clusters": 300,
+      "rows": 2160,
+      "source_mapping_retained": false,
+      "canonical_analysis_order_present": true
+    }
+  },
+  "cluster_ids_generated_with_unpublished_random_values": true,
+  "key_field": "cluster_id",
+  "mapping_included": false,
+  "rows_randomly_permuted_by_cluster": true,
+  "schema_version": "blackwellbench-opaque-cluster-projections-v2",
+  "analysis_order": {
+    "field": "analysis_order",
+    "ordinal_base": 0,
+    "ordinal_scope": "per scored panel; one consistent ordinal per opaque cluster",
+    "canonical_bootstrap_order_restored": true,
+    "benchmark_task_ids_included": false,
+    "cluster_crosswalk_included": false
+  },
+  "projection_key": "random opaque cluster_id plus frozen anonymous analysis_order; no source crosswalk"
+}

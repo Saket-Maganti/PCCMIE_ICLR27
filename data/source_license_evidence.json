@@ -1,0 +1,33 @@
+{
+  "dataset": "TIGER-Lab/MMLU-Pro",
+  "local_evidence": {
+    "license_scope_caveat": "The dataset card declares MIT for this dataset. This release does not independently adjudicate rights in any upstream third-party source material incorporated into benchmark questions.",
+    "official_metadata_revision_returned": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+    "official_pinned_revision_file_list_contains_standalone_license": false,
+    "official_pinned_revision_metadata_license": "MIT",
+    "official_pinned_revision_metadata_url": "https://huggingface.co/api/datasets/TIGER-Lab/MMLU-Pro/revision/b189ec765aa7ed75c8acfea42df31fdae71f97be",
+    "original_mmlu_pro_benchmark_paper_reports_dataset_mit_license": true,
+    "project_mit_license_covers_third_party_dataset": false,
+    "redistribution_conclusion": "the pinned upstream dataset metadata explicitly declares MIT; comply with MIT conditions and preserve attribution if redistributing source material",
+    "source_revision_and_file_hash_present": true,
+    "standalone_dataset_license_file_in_local_source_project_copy": false
+  },
+  "manual_review_required": "Confirm the source card and MIT notice still apply to the selected revision and intended use; preserve required license/attribution notices and consider any third-party material caveat.",
+  "official_paper": {
+    "published_in": "NeurIPS 2024 Datasets and Benchmarks Track",
+    "supplemental_url": "https://papers.nips.cc/paper_files/paper/2024/file/ad236edc564f3e3156e1b2feafb99a24-Supplemental-Datasets_and_Benchmarks_Track.pdf",
+    "title": "MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark"
+  },
+  "official_source_url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro/resolve/b189ec765aa7ed75c8acfea42df31fdae71f97be/data/test-00000-of-00001.parquet?download=true",
+  "pinned_file": "data/test-00000-of-00001.parquet",
+  "pinned_file_sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+  "pinned_revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+  "release_handling": {
+    "acknowledgement_is_not_a_permission_grant": true,
+    "acquisition_requires_operator_review_acknowledgement": true,
+    "deterministic_official_source_acquisition_provided": true,
+    "question_text_or_options_included": false,
+    "raw_benchmark_file_included": false
+  },
+  "schema_version": "blackwellbench-local-license-evidence-v1"
+}

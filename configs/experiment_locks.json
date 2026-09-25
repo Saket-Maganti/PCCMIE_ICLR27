@@ -1,0 +1,96 @@
+{
+  "r2": {
+    "role": "discovery",
+    "runtime": {
+      "vllm": "0.28.0",
+      "pytorch": "2.13.0+cu130",
+      "cuda": "13.0",
+      "dtype": "bfloat16",
+      "max_model_len": 10496,
+      "max_tokens": 8192,
+      "concurrency": 8,
+      "max_num_seqs": 8,
+      "scheduler": "groups_of_8",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "top_k": -1,
+      "seeds": [
+        2701,
+        2702,
+        2703
+      ]
+    },
+    "models": [
+      {
+        "id": "google/gemma-4-12B-it",
+        "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7"
+      },
+      {
+        "id": "meta-llama/Llama-3.1-8B-Instruct",
+        "revision": "0e9e39f249a16976918f6564b8830bc894c89659"
+      },
+      {
+        "id": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+        "revision": "81cee02dd020268dced5fa1327e8555acce9c63c"
+      }
+    ],
+    "input": {
+      "dataset": "TIGER-Lab/MMLU-Pro",
+      "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+      "file": "data/test-00000-of-00001.parquet",
+      "sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+      "panel_manifest": "data/input_panel_manifest.json",
+      "metadata_literal": "[META]",
+      "tokenizer_chat_template_sha256": {
+        "google/gemma-4-12B-it": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4",
+        "meta-llama/Llama-3.1-8B-Instruct": "e10ca381b1ccc5cf9db52e371f3b6651576caee0a630b452e2816b2d404d4b65",
+        "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": "b6835114b7303ddd78919a82e4d9f7d8c26ed0d7dfc36beeb12d524f6144eab1"
+      }
+    },
+    "output": "One JSONL row per model/task/reference/treatment/seed with raw response and scored metadata."
+  },
+  "gemma_confirmation": {
+    "role": "prospective magnitude confirmation",
+    "model": "google/gemma-4-12B-it",
+    "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "runtime": "vllm==0.28.0",
+    "parameters": {
+      "max_model_len": 10496,
+      "max_tokens": 8192,
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "top_k": -1,
+      "seed": 2701,
+      "do_sample": false
+    },
+    "input": {
+      "dataset": "TIGER-Lab/MMLU-Pro",
+      "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+      "file_sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+      "panel_manifest": "data/input_panel_manifest.json"
+    },
+    "output": "One JSONL row per request key including model revision, task/reference/treatment, output token count, response hash and raw response."
+  },
+  "s1": {
+    "role": "constrained-choice endpoint stress",
+    "model": "google/gemma-4-12B-it",
+    "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+    "runtime": "vllm==0.28.0",
+    "parameters": {
+      "max_tokens": 2,
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "top_k": -1,
+      "seed": 2701,
+      "do_sample": false
+    },
+    "endpoint": "structured_outputs.choice with task-specific allowed labels",
+    "input": {
+      "dataset": "TIGER-Lab/MMLU-Pro",
+      "revision": "b189ec765aa7ed75c8acfea42df31fdae71f97be",
+      "file_sha256": "0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8",
+      "panel_manifest": "data/input_panel_manifest.json"
+    },
+    "output": "One JSONL row per primary or integrity-duplicate request with selected constrained label and correctness."
+  }
+}
