@@ -1,72 +1,264 @@
-# BlackwellBench
+# Prompt Conditions Can Change Measured Intervention Effects in LLM Evaluation
 
-BlackwellBench measures how evaluator reference choices affect paired model outcomes and treatment-effect estimates. The evidence separates behavioral turnover, R2 discovery, prospective Gemma magnitude confirmation, and later endpoint and execution diagnostics.
+Anonymous code and reproduction package for the paper **“Prompt Conditions Can Change Measured Intervention Effects in LLM Evaluation.”**
 
-## CPU reproduction
+We study whether the measured effect of a **silent self-check intervention** changes when the surrounding prompt condition changes. The main experiments use MMLU-Pro with three prompt conditions—**Standard**, **Masked**, and **Metadata**—and compare self-check against no-self-check within the same task and prompt condition.
 
-Requires Python 3.10 or later.
+For Gemma-4-12B-it, the Standard-minus-Masked difference in self-check gain is **+15.33 percentage points** in the three-model discovery study and **+20.00 pp [11.82, 28.18]** in a separate pre-specified 300-task replication. DeepSeek shows little observed interaction under the same discovery design, while Llama is inconclusive. The magnitude also depends on scoring: semantic rescoring of the replication outputs gives **+15.67 pp [7.82, 23.52]**, whereas a separate constrained-decoding evaluation gives **−1.00 pp [−6.87, 4.87]**.
+
+> Implementation schemas retain the stable keys `BASE`, `MASK`, and `META`; in the paper these correspond to **Standard**, **Masked**, and **Metadata**, respectively.
+
+## Setup
+
+CPU reproduction requires Python 3.10 or later.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements.txt
+```
+
+Reproduce the reported CPU analyses and regenerate the included figures:
+
+```bash
 python3 scripts/reproduce.py
 python3 scripts/make_figures.py
 ```
 
-The outcome projections retain randomly generated opaque `cluster_id` values and randomized CSV row order. R2, confirmation, and S1 rows carry a zero-based `analysis_order` ordinal per cluster so the frozen max-t bootstrap reproduces the canonical draws. Opaque task fingerprints in `data/input_panel_manifest.json` preserve that anonymous analysis order separately from the original request order; no benchmark task IDs or task-ID crosswalk are included. `data/manifest.json` freezes the projection hashes.
+The default reproduction uses the anonymous scored projections included in `data/`. It checks the frozen contrast families, simultaneous max-t intervals, and headline values against the expected results in `configs/analysis.json`.
 
-## MMLU-Pro inputs and source terms
+## Main results
 
-The source lock pins `TIGER-Lab/MMLU-Pro` at revision `b189ec765aa7ed75c8acfea42df31fdae71f97be`, file `data/test-00000-of-00001.parquet`, SHA-256 `0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8`. The local project copy had no standalone dataset license file, so I checked the official metadata at that exact revision: it declares MIT. The MMLU-Pro paper also reports an MIT license for the dataset. The project MIT license applies to this repository's code; the upstream dataset declaration is separate. See `data/source_license_evidence.json` and the [official pinned dataset revision](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro/tree/b189ec765aa7ed75c8acfea42df31fdae71f97be).
+### Supporting MATH paired comparison
 
-No benchmark questions or options are included. Before preparing inputs, review the current source card and its MIT notice at the [official pinned source](https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro/tree/b189ec765aa7ed75c8acfea42df31fdae71f97be). The acknowledgement flag records that review; it does not grant permission or change the source terms. The downloaded source, task IDs, prompts, request ledgers, and generated outputs stay under ignored `data/local/`.
+| Quantity | Result |
+|---|---:|
+| Paired outcomes | 3,840 |
+| Correctness flips | 814 (21.20%) |
+| Gains | 408 |
+| Losses | 406 |
+| Accuracy before | 45.260% |
+| Accuracy after | 45.313% |
+| Aggregate change | +0.052 pp |
+| Tasks with at least one flip | 80.42% |
+
+This comparison motivates paired analysis: the aggregate mean is almost unchanged even though many individual outcomes change.
+
+### MMLU-Pro discovery
+
+The discovery study uses 300 MMLU-Pro tasks per model.
+
+| Model | Standard gain | Masked gain | Metadata gain | Standard − Masked |
+|---|---:|---:|---:|---:|
+| DeepSeek R1 8B | +11.00 [2.12, 19.88] | +11.33 [4.00, 18.67] | +10.33 [2.12, 18.54] | −0.33 [−10.65, 9.98] |
+| Gemma 12B | +29.33 [20.63, 38.04] | +14.00 [7.23, 20.77] | +20.00 [11.54, 28.46] | **+15.33 [6.70, 23.96]** |
+| Llama 3.1 8B | +4.67 [−3.39, 12.73] | +0.33 [−6.92, 7.59] | +2.33 [−5.69, 10.36] | +4.33 [−5.95, 14.62] |
+
+Values are percentage points with simultaneous 95% confidence intervals.
+
+DeepSeek shows similar self-check gains across the three prompt conditions and little observed interaction. Llama is inconclusive. Gemma shows the large interaction carried forward to a separate replication.
+
+### Pre-specified Gemma replication
+
+The replication uses a new 300-task MMLU-Pro set and a separately fixed analysis plan.
+
+| Quantity | Estimate | Simultaneous 95% CI |
+|---|---:|---:|
+| Standard gain | +30.33 | [22.45, 38.21] |
+| Masked gain | +10.33 | [4.37, 16.30] |
+| Metadata gain | +22.67 | [15.52, 29.81] |
+| Standard − Masked | **+20.00** | **[11.82, 28.18]** |
+| Standard − Metadata | +7.67 | [−0.30, 15.63] |
+| Masked − Metadata | −12.33 | [−20.17, −4.50] |
+
+The pre-specified threshold for the primary Standard-minus-Masked interaction was +5 pp.
+
+### Scoring and output-format sensitivity
+
+| Analysis | Standard − Masked interaction | 95% interval | Evaluation setting |
+|---|---:|---:|---|
+| Exact-format accuracy | +20.00 pp | [11.82, 28.18] | Same outputs and task set as the replication |
+| Semantic answer scoring | +15.67 pp | [7.82, 23.52] | Same outputs and task set |
+| Answer-format compliance | +26.33 pp | [18.65, 34.02] | Same outputs and task set |
+| Constrained decoding | −1.00 pp | [−6.87, 4.87] | Separate 300-task set; output restricted to answer labels |
+
+For constrained decoding, the self-check gains are:
+
+- Standard: −13.00 pp [−18.93, −7.07]
+- Masked: −12.00 pp [−18.83, −5.17]
+- Metadata: −12.33 pp [−18.99, −5.67]
+- Standard − Metadata: −0.67 pp [−6.72, 5.39]
+- Metadata − Masked: −0.33 pp [−5.10, 4.44]
+
+The constrained-decoding experiment changes both the task set and output format, so it does not isolate a causal effect of scoring and is not a direct replication of the exact-format result.
+
+## Data preparation
+
+Benchmark questions and answer options are **not redistributed** in this repository. MMLU-Pro inputs are acquired locally from the pinned official source and materialized only under ignored `data/local/`.
+
+The release pins:
+
+- dataset: `TIGER-Lab/MMLU-Pro`
+- revision: `b189ec765aa7ed75c8acfea42df31fdae71f97be`
+- file: `data/test-00000-of-00001.parquet`
+- SHA-256: `0e24a191921c2f453518a537a8b2117bd137e7714d4ef1565e9ba06c1ecb9ad8`
+
+Install the input-preparation dependencies and build the frozen request packages:
 
 ```bash
 python3 -m pip install -r requirements-inputs.txt
+
 python3 scripts/prepare_inputs.py acquire --accept-source-terms
 python3 scripts/prepare_inputs.py prepare --accept-source-terms
 ```
 
-Preparation verifies the pinned source hash and frozen content commitments before writing local R2, prospective confirmation, and S1 request packages. It also verifies tokenizer chat-template hashes and the R2 `[MASK]`/`[META]` full-chat token-count lock. Provide `HF_TOKEN` when model repositories require authenticated tokenizer access. Use `--local-tokenizers-only` to prevent model-repository access, or pass `--tokenizer-cache-dir` pointing to directories named `llama31_8b_it`, `deepseek_r1_distill_llama8b`, and `gemma4_12b_it`.
+`--accept-source-terms` records that the operator reviewed the upstream source terms; it is not a permission grant. The preparation step verifies the pinned dataset hash, frozen panel commitments, tokenizer chat-template hashes, and prompt-tokenization constraints before writing local request packages.
 
-## GPU runner preflights and runs
+If tokenizer repositories require authentication, provide `HF_TOKEN`. To avoid model-repository access, use `--local-tokenizers-only` with a local tokenizer cache.
 
-The preflight modes validate local request packages and send zero model requests:
+## Experiments
+
+### Three-model MMLU-Pro discovery
+
+The discovery study evaluates 300 MMLU-Pro tasks for each of:
+
+- `google/gemma-4-12B-it`
+- `deepseek-ai/DeepSeek-R1-Distill-Llama-8B`
+- `meta-llama/Llama-3.1-8B-Instruct`
+
+under Standard, Masked, and Metadata prompts, with and without self-check. Three deterministic repeats are used as reproducibility checks, for **16,200 generations** in total. Statistical inference is task-level; repeated generations are not treated as additional independent observations.
+
+Exact model revisions and runtime parameters are frozen in `configs/experiment_locks.json`.
+
+Example zero-request preflight:
 
 ```bash
-python3 scripts/run_r2_gpu.py --root data/local/prepared/r2 --model google/gemma-4-12B-it --revision 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 --dry-run
-python3 scripts/run_confirmation_gpu.py --phase qualification --input-package data/local/prepared/confirmation --preflight-only
-python3 scripts/run_s1_gpu.py --phase production --package-root data/local/prepared/s1 --preflight-only
+python3 scripts/run_r2_gpu.py \
+  --root data/local/prepared/r2 \
+  --model google/gemma-4-12B-it \
+  --revision 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7 \
+  --dry-run
 ```
 
-R2 runs against an OpenAI-compatible vLLM endpoint with the frozen model revision, 8-way concurrency, and 8,192-token limit. Supply `--url`, `--host-id`, `--instance-id`, `--gpu-uuid`, and `--out` for a live run. The confirmation runner supports qualification and confirmation; confirmation stays gated on a passing qualification-validation file and an immutable start lock bound to the runtime manifest and GPU. S1 requires its non-scientific endpoint smoke to pass before qualification or production. No preflight performs inference.
-
-R2 keeps each frozen seed in its row key and output metadata; the canonical R2 request does not send a seed parameter. For fresh outcome projections, supply all three complete R2 output ledgers and the confirmation ledger to the canonical scorer, then analyze them:
+For live generation, supply the endpoint and execution identity arguments shown by:
 
 ```bash
-python3 scripts/score_outputs.py r2 --outputs outputs/r2/gemma/official.jsonl outputs/r2/llama/official.jsonl outputs/r2/deepseek/official.jsonl --out data/local/scored/r2.csv
-python3 scripts/score_outputs.py confirmation --outputs data/local/prepared/confirmation/runtime_outputs/confirmation_responses.jsonl --out data/local/scored/confirmation.csv
-python3 scripts/reproduce.py --r2-outcomes data/local/scored/r2.csv --confirmation-outcomes data/local/scored/confirmation.csv
+python3 scripts/run_r2_gpu.py --help
 ```
 
-Before confirmation production, run `scripts/validate_gates.py confirmation-qualification` on the complete 180-row qualification output, then `confirmation-lock` with that PASS result, the runtime manifest, and the host, instance, and GPU identities. For S1, run smoke, sequential invariance, concurrent invariance, and qualification in that order; `python3 scripts/validate_gates.py s1` writes the receipt required before production. The receipt binds the exact prepared package and all four gate artifacts.
+The canonical discovery transport is deterministic and does not send the frozen repetition seed to the endpoint; the seed remains part of row identity and output metadata.
 
-The GPU host must provide the exact runtime in `configs/experiment_locks.json`. `requirements-inputs.txt` installs local preparation and client libraries; vLLM and CUDA are host-specific and are not installed by the CPU reproduction requirements.
+### Pre-specified Gemma replication
 
-## Results
+The replication uses a separate 300-task MMLU-Pro panel with Gemma-4-12B-it. It contains **1,800 primary generations** plus **360 duplicate generations** used only for reproducibility checks.
 
-| Study | Result | Interpretation |
-|---|---:|---|
-| K4 → K4R | 814/3,840 paired outcomes switched; 408 gains, 406 losses; 99.75% cancellation; +0.052 pp aggregate drift | A rendering-correction transition illustrating turnover and cancellation, not a comparator-only causal intervention or universal treatment effect. |
-| R2 Gemma discovery | BASE–MASK interaction +15.33 pp; simultaneous 95% CI [6.70, 23.96] pp | Bounded discovery. DeepSeek is a strict-scoring robust benefit but its machine-parser diagnostic is underdetermined; Llama is underdetermined. |
-| Gemma prospective confirmation | BASE +30.33 pp, MASK +10.33 pp, token-matched metadata +22.67 pp; BASE–MASK +20.00 pp [11.82, 28.18] | Magnitude confirmation on 300 untouched tasks. All three gains are positive; this is not a benefit-to-harm reversal. |
-| S1 constrained-choice stress | BASE −13.00 pp, MASK −12.00 pp, metadata −12.33 pp; BASE–MASK −1.00 pp [−6.87, +4.87] | Underdetermined. S1 changes both the panel and endpoint, so it does not isolate endpoint choice. |
+Qualification preflight:
 
-The frozen `analysis_order` ordinals preserve the canonical 9,999-draw max-t sequence after cluster anonymization. `configs/analysis.json` records expected values extracted from the frozen canonical result artifacts, and `scripts/reproduce.py` checks every primary contrast family against them.
+```bash
+python3 scripts/run_confirmation_gpu.py \
+  --phase qualification \
+  --input-package data/local/prepared/confirmation \
+  --preflight-only
+```
 
-The confirmation panel has no overlap with the frozen admitted experiment registry or qualification panel; that does not establish absence from model pretraining. R2 retains a production-authorization chronology caveat, so its results are bounded discovery. Stage B portability qualification failed (8/27 comparisons exceeded the 7.5 pp tolerance, maximum 25 pp). Extensions E1, E2, E4, and E5 failed qualification and produced no production rows; E3 was not run. S1B Arm B V2 stopped at the sequential invariance strict-parser gate with zero production rows, so there is no crossed estimate. The evidence does not establish cross-domain confirmation or hardware-independent effects.
+Production remains gated on a passing qualification validation and an immutable start lock bound to the runtime manifest and execution identity. The gate utilities are exposed through:
+
+```bash
+python3 scripts/validate_gates.py confirmation-qualification --help
+python3 scripts/validate_gates.py confirmation-lock --help
+```
+
+No preflight sends model requests.
+
+### Constrained-decoding evaluation
+
+The constrained-decoding study uses a separate 300-task Gemma panel and restricts generation to the available answer labels. Scoring is direct label equality.
+
+Preflight:
+
+```bash
+python3 scripts/run_s1_gpu.py \
+  --phase production \
+  --package-root data/local/prepared/s1 \
+  --preflight-only
+```
+
+The frozen execution sequence requires smoke, sequential invariance, concurrent invariance, and qualification checks before production. The resulting gate receipt is validated with:
+
+```bash
+python3 scripts/validate_gates.py s1 --help
+```
+
+This experiment changes both the evaluation set and output format, so it is **not** a direct replication of the exact-format result and does not isolate a causal effect of scoring.
+
+## Scoring fresh model outputs
+
+The repository includes the canonical scoring bridge for discovery and replication outputs.
+
+Discovery:
+
+```bash
+python3 scripts/score_outputs.py r2 \
+  --outputs outputs/r2/gemma/official.jsonl \
+            outputs/r2/llama/official.jsonl \
+            outputs/r2/deepseek/official.jsonl \
+  --out data/local/scored/r2.csv
+```
+
+Replication:
+
+```bash
+python3 scripts/score_outputs.py confirmation \
+  --outputs data/local/prepared/confirmation/runtime_outputs/confirmation_responses.jsonl \
+  --out data/local/scored/confirmation.csv
+```
+
+Recompute the paper statistics from fresh scored outputs:
+
+```bash
+python3 scripts/reproduce.py \
+  --r2-outcomes data/local/scored/r2.csv \
+  --confirmation-outcomes data/local/scored/confirmation.csv
+```
+
+## Reproducibility notes
+
+All primary comparisons are paired at the task level. The discovery study uses max-t simultaneous 95% confidence intervals over its reported contrast family; the pre-specified replication uses simultaneous intervals over six fixed contrasts.
+
+The public projections use randomized opaque `cluster_id` values and a frozen anonymous `analysis_order`. No benchmark task-ID crosswalk, benchmark question text, answer options, or raw model responses are included in the tracked repository. `data/local/` is intentionally ignored.
+
+The large Gemma interaction is confirmed on MMLU-Pro, but it is not claimed to be universal across models or evaluation settings. DeepSeek shows little observed prompt-by-intervention interaction in discovery, Llama remains inconclusive, and there is no independent second-benchmark replication of the 20 pp Gemma result. Semantic rescoring preserves a positive interaction on the same outputs, while the separate constrained-decoding evaluation does not reproduce it.
+
+## Repository structure
+
+```text
+.
+├── configs/                  # frozen experiment and analysis settings
+├── data/                     # anonymous scored projections and source commitments
+├── figures/                  # regenerated paper-facing plots
+├── results/                  # reproduced summary
+├── scripts/
+│   ├── prepare_inputs.py     # local MMLU-Pro acquisition and request preparation
+│   ├── run_r2_gpu.py         # three-model discovery generation
+│   ├── run_confirmation_gpu.py
+│   ├── run_s1_gpu.py         # constrained-decoding evaluation
+│   ├── score_outputs.py      # canonical output scoring
+│   ├── validate_gates.py     # qualification/start-gate validation
+│   ├── reproduce.py          # statistical reproduction
+│   └── make_figures.py
+├── requirements.txt
+├── requirements-inputs.txt
+└── SHA256SUMS.txt
+```
+
+## Integrity
+
+`SHA256SUMS.txt` records the intended public release files. To verify the distributed payload:
+
+```bash
+sha256sum -c SHA256SUMS.txt
+```
 
 ## License
 
-The included `LICENSE` applies to repository code only. MMLU-Pro and model assets remain under their own terms. The release does not assert permission to redistribute MMLU-Pro or derived source-linked artifacts; source acquisition is local and conditional on the operator's review of the applicable terms.
+Repository code is released under the included MIT `LICENSE`. MMLU-Pro and model assets remain subject to their own upstream terms. The benchmark is acquired locally and is not redistributed by this repository.
